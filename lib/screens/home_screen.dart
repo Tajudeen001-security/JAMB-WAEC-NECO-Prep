@@ -12,26 +12,88 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              expandedHeight: 180,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title: const Text('Exam Prep',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                background: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.primary, AppColors.secondary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+            // Brand header with logo + credits
+            // Brand header with logo + credits
+            // Brand header with logo + credits
+            SliverToBoxAdapter(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(28),
+                    bottomRight: Radius.circular(28),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Logo circle
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'JX',
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.school, size: 64, color: Colors.white70),
-                  ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'JAMB • WAEC • NECO Prep',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'by JagX & JRILICENSE',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Thousands of past questions • Real CBT experience',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.75),
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ),
+
+            // Exam list
             SliverPadding(
               padding: const EdgeInsets.all(20),
               sliver: SliverList(
@@ -62,7 +124,7 @@ class HomeScreen extends StatelessWidget {
                           );
                         },
                       )),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
                   Card(
                     color: Colors.amber.shade50,
                     child: const Padding(
@@ -73,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Get a free ALOC API token at questions.aloc.com.ng and paste it in lib/config/api_config.dart for full question access.',
+                              'Get a free ALOC API token at questions.aloc.com.ng and paste it in lib/config/api_config.dart for thousands of real past questions. The app already includes 100+ offline practice questions.',
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
@@ -81,6 +143,19 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
+                  // Footer credit
+                  Center(
+                    child: Text(
+                      '© 2026 JagX & JRILICENSE • Built for Nigerian students',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary.withOpacity(0.8),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                 ]),
               ),
             ),
@@ -110,6 +185,8 @@ class _ExamCard extends StatelessWidget {
         return Icons.menu_book;
       case 'neco':
         return Icons.assignment;
+      case 'post-utme':
+        return Icons.account_balance;
       default:
         return Icons.quiz;
     }
