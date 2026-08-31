@@ -47,7 +47,7 @@ const Map<String, String> subjectNames = {
   'insurance': 'Insurance',
 };
 
-/// Exam types mapping
+/// Exam types mapping (includes Post-UTME)
 const Map<String, String> examTypes = {
   'utme': 'JAMB (UTME)',
   'wassce': 'WAEC (WASSCE)',
