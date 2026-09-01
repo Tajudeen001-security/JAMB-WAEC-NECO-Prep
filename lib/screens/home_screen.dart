@@ -4,6 +4,11 @@ import 'subject_screen.dart';
 import 'jamb_mock_setup_screen.dart';
 import 'scores_screen.dart';
 import 'premium_screen.dart';
+import 'activation_screen.dart';
+import 'admin_screen.dart';
+import '../services/auth_service.dart';
+
+class PremiumAdminEmail { static const value = 'gbadamositajudeenwan@gmail.com'; }
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -46,6 +51,22 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivationScreen())),
+                    icon: const Icon(Icons.vpn_key_outlined), label: const Text('Enter Code'),
+                  )),
+                  const SizedBox(width: 10),
+                  FutureBuilder<String?>(
+                    future: AuthService().currentIdentifier(),
+                    builder: (context, snapshot) => snapshot.data == PremiumAdminEmail.value
+                        ? Expanded(child: OutlinedButton.icon(
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen())),
+                            icon: const Icon(Icons.admin_panel_settings_outlined), label: const Text('Admin'),
+                          )) : const SizedBox.shrink(),
+                  ),
+                ]),
+                const SizedBox(height: 14),
                     const Text('JRI PREP', style: TextStyle(
                       color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 4),
