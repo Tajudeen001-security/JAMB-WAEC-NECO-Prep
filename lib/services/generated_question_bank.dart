@@ -71,6 +71,6 @@ Question _make(String subject, int n, int id) {
   }
 }
 
-Question _q(int id, String subject, String type, int year, String question, Map<String, String> options, String answer, String solution) => Question(
+Question _q(int id, String subject, String type, int year, String question, Map<String, String?> options, String answer, String solution) => Question(
   id: id, question: question, options: options, answer: answer, solution: solution, examType: type, examYear: year.toString(), subject: subject,
 );
