@@ -1,5 +1,4 @@
 // Free Access Token from https://questions.aloc.com.ng
-// This unlocks thousands of real past questions for JAMB, WAEC, NECO & Post-UTME.
 
 const String alocAccessToken = 'aloc_ih5iT2FsxLR7AzUw7KRaW4L0wwLdQdMFiI8EuNKS';
 
