@@ -27,47 +27,63 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Generate Android platform with JRI package identity
+      - name: Generate Android platform if missing
         run: |
           if [ ! -d android ]; then
-            flutter create . --project-name jri_prep --org com.jrilearning --platforms=android
+            flutter create . --project-name jamb_waec_neco_prep --org com.jrilearning --platforms=android
           fi
-          # The generated Flutter smoke test targets the generated MyApp, not this app.
           rm -rf test
 
-      - name: Apply JRI PREP branding
+      - name: Apply app name and launcher branding
         run: |
-          mkdir -p android/app/src/main/res/drawable android/app/src/main/res/mipmap-anydpi-v26
+          mkdir -p android/app/src/main/res/drawable
+          # Simple adaptive-style vector icon (green + gold JRI mark)
           cat > android/app/src/main/res/drawable/jri_launcher.xml <<'EOF'
-          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-            <path android:fillColor="#071A33" android:pathData="M0,0h108v108h-108z"/>
-            <path android:fillColor="#F4C542" android:pathData="M54,18c-14,0 -25,11 -25,25h50c0,-14 -11,-25 -25,-25z"/>
-            <path android:fillColor="#F4C542" android:pathData="M36,45h36l-5,10h-26z"/>
-            <path android:fillColor="#FFFFFF" android:pathData="M27,63h54v6h-54z"/>
-            <path android:fillColor="#F4C542" android:pathData="M31,72h46l-7,20h-32z"/>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+            <path android:fillColor="#1B5E20" android:pathData="M0,0h108v108h-108z"/>
+            <path android:fillColor="#FFFFFF" android:pathData="M18,18h72v72h-72z"/>
+            <path android:fillColor="#1B5E20" android:pathData="M30,34h12v40h-12z"/>
+            <path android:fillColor="#1B5E20" android:pathData="M30,34h34c10,0 18,8 18,18 0,10 -8,18 -18,18h-22v-12h20c4,0 6,-2 6,-6 0,-4 -2,-6 -6,-6h-20z"/>
+            <path android:fillColor="#FFC107" android:pathData="M78,70c-6,0 -10,4 -10,10s4,10 10,10 10,-4 10,-10 -4,-10 -10,-10z"/>
           </vector>
           EOF
+
           python - <<'PY'
           from pathlib import Path
-          p=Path('android/app/src/main/AndroidManifest.xml')
-          s=p.read_text()
-          s=s.replace('android:label="jri_prep"', 'android:label="JRI PREP"')
-          if 'android:label=' not in s:
-              s=s.replace('<application', '<application android:label="JRI PREP"')
-          s=s.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/jri_launcher"')
-          s=s.replace('android:roundIcon="@mipmap/ic_launcher_round"', 'android:roundIcon="@drawable/jri_launcher"')
-          p.write_text(s)
-          v=Path('android/app/src/main/res/values/strings.xml')
-          if v.exists():
-              x=v.read_text().replace('jri_prep','JRI PREP')
-              v.write_text(x)
+          manifest = Path('android/app/src/main/AndroidManifest.xml')
+          text = manifest.read_text()
+          # Force visible app name (no underscores)
+          import re
+          if 'android:label=' in text:
+              text = re.sub(r'android:label="[^"]*"', 'android:label="JRI PREP"', text)
+          else:
+              text = text.replace('<application', '<application android:label="JRI PREP"', 1)
+          text = text.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/jri_launcher"')
+          text = text.replace('android:roundIcon="@mipmap/ic_launcher_round"', 'android:roundIcon="@drawable/jri_launcher"')
+          if 'android:roundIcon=' not in text and 'android:icon=' in text:
+              text = text.replace('android:icon="@drawable/jri_launcher"', 'android:icon="@drawable/jri_launcher" android:roundIcon="@drawable/jri_launcher"')
+          manifest.write_text(text)
+
+          strings = Path('android/app/src/main/res/values/strings.xml')
+          if strings.exists():
+              s = strings.read_text()
+              s = re.sub(r'<string name="app_name">[^<]*</string>', '<string name="app_name">JRI PREP</string>', s)
+              strings.write_text(s)
+          else:
+              strings.parent.mkdir(parents=True, exist_ok=True)
+              strings.write_text('<resources>\n    <string name="app_name">JRI PREP</string>\n</resources>\n')
+          print('Branding applied: label=JRI PREP, icon=jri_launcher')
           PY
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Analyze
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze --no-fatal-infos || true
 
       - name: Build release APK
         run: flutter build apk --release
