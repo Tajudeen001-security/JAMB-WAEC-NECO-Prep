@@ -47,3 +47,10 @@ class AppTheme {
 
 const List<int> questionCounts = [10, 20, 30, 40];
 const List<int> timePerQuestionOptions = [30, 45, 60, 90]; // seconds
+
+const Map<String, String> examTypes = {
+  'utme': 'JAMB (UTME)',
+  'wassce': 'WAEC (WASSCE)',
+  'neco': 'NECO',
+  'post-utme': 'Post-UTME',
+};
