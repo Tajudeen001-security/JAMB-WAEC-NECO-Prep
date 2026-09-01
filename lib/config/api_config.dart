@@ -1,7 +1,7 @@
-// Get a free Access Token by signing up at https://questions.aloc.com.ng
-// Then paste it below.
+// Free Access Token from https://questions.aloc.com.ng
+// This unlocks thousands of real past questions for JAMB, WAEC, NECO & Post-UTME.
 
-const String alocAccessToken = 'YOUR_ALOC_TOKEN_HERE';
+const String alocAccessToken = 'aloc_ih5iT2FsxLR7AzUw7KRaW4L0wwLdQdMFiI8EuNKS';
 
 const String alocBaseUrl = 'https://questions.aloc.com.ng/api/v2';
 

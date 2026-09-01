@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/api_config.dart';
 import '../utils/constants.dart';
 import 'subject_screen.dart';
+import 'jamb_mock_setup_screen.dart';
+import 'scores_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,9 +14,6 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Brand header with logo + credits
-            // Brand header with logo + credits
-            // Brand header with logo + credits
             SliverToBoxAdapter(
               child: Container(
                 width: double.infinity,
@@ -32,7 +31,6 @@ class HomeScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    // Logo circle
                     Container(
                       width: 88,
                       height: 88,
@@ -93,11 +91,48 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Exam list
             SliverPadding(
               padding: const EdgeInsets.all(20),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
+                  // Quick actions
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _QuickActionCard(
+                          icon: Icons.history_edu,
+                          title: 'My Scores',
+                          subtitle: 'View past results',
+                          color: Colors.indigo,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const ScoresScreen()),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _QuickActionCard(
+                          icon: Icons.school,
+                          title: 'JAMB Mock',
+                          subtitle: '4 subjects • /400',
+                          color: AppColors.primary,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const JambMockSetupScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+
                   const Text(
                     'Choose Your Exam',
                     style: TextStyle(
@@ -126,16 +161,16 @@ class HomeScreen extends StatelessWidget {
                       )),
                   const SizedBox(height: 28),
                   Card(
-                    color: Colors.amber.shade50,
+                    color: Colors.green.shade50,
                     child: const Padding(
                       padding: EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          Icon(Icons.info_outline, color: Colors.amber),
+                          Icon(Icons.check_circle, color: Colors.green),
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Get a free ALOC API token at questions.aloc.com.ng and paste it in lib/config/api_config.dart for thousands of real past questions. The app already includes 100+ offline practice questions.',
+                              'ALOC API token is configured. The app can now fetch thousands of real past questions for JAMB, WAEC, NECO and Post-UTME. Offline practice bank is also expanded.',
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
@@ -144,7 +179,6 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Footer credit
                   Center(
                     child: Text(
                       '© 2026 JagX & JRILICENSE • Built for Nigerian students',
@@ -160,6 +194,57 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: color, size: 28),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
