@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build JRI PREP Android APK
 
 on:
   push:
@@ -10,7 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,35 +17,62 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
-          channel: 'stable'
+          channel: stable
           cache: true
 
-      - name: Generate Android platform files
+      - name: Generate Android platform with JRI package identity
         run: |
-          # Create platform folders if missing (repo only has lib/)
-          if [ ! -d "android" ]; then
-            flutter create . --project-name jamb_waec_neco_prep --org com.examprep --platforms=android
+          if [ ! -d android ]; then
+            flutter create . --project-name jri_prep --org com.jrilearning --platforms=android
           fi
+
+      - name: Apply JRI PREP branding
+        run: |
+          mkdir -p android/app/src/main/res/drawable android/app/src/main/res/mipmap-anydpi-v26
+          cat > android/app/src/main/res/drawable/jri_launcher.xml <<'EOF'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+            <path android:fillColor="#071A33" android:pathData="M0,0h108v108h-108z"/>
+            <path android:fillColor="#F4C542" android:pathData="M54,18c-14,0 -25,11 -25,25h50c0,-14 -11,-25 -25,-25z"/>
+            <path android:fillColor="#F4C542" android:pathData="M36,45h36l-5,10h-26z"/>
+            <path android:fillColor="#FFFFFF" android:pathData="M27,63h54v6h-54z"/>
+            <path android:fillColor="#F4C542" android:pathData="M31,72h46l-7,20h-32z"/>
+          </vector>
+          EOF
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          s=p.read_text()
+          s=s.replace('android:label="jri_prep"', 'android:label="JRI PREP"')
+          if 'android:label=' not in s:
+              s=s.replace('<application', '<application android:label="JRI PREP"')
+          s=s.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/jri_launcher"')
+          s=s.replace('android:roundIcon="@mipmap/ic_launcher_round"', 'android:roundIcon="@drawable/jri_launcher"')
+          p.write_text(s)
+          v=Path('android/app/src/main/res/values/strings.xml')
+          if v.exists():
+              x=v.read_text().replace('jri_prep','JRI PREP')
+              v.write_text(x)
+          PY
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze project
-        run: flutter analyze --no-fatal-infos || true
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
 
-      - name: Build APK (release)
+      - name: Build release APK
         run: flutter build apk --release
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: jri-prep-release
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
