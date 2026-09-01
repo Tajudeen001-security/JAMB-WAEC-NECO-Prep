@@ -10,22 +10,19 @@ cd JAMB-WAEC-NECO-Prep
 flutter create . --project-name jamb_waec_neco_prep --org com.examprep
 ```
 
-This command keeps your existing `lib/` and `pubspec.yaml` while adding the necessary platform code.
+This command keeps your existing `lib/` and `pubspec.yaml` while adding the necessary platform code. It is also required to replace the default Dart bird app icon.
 
-## 2. Get Free ALOC API Token
+## 2. ALOC API Token
 
-1. Go to https://questions.aloc.com.ng
-2. Create a free account
-3. Copy your **AccessToken** from the dashboard
-4. Open `lib/config/api_config.dart` and replace:
+The token is already configured in `lib/config/api_config.dart`:
 
 ```dart
-const String alocAccessToken = 'YOUR_ALOC_TOKEN_HERE';
+const String alocAccessToken = 'aloc_ih5iT2FsxLR7AzUw7KRaW4L0wwLdQdMFiI8EuNKS';
 ```
 
-With your real token.
+You can replace it with your own free token from https://questions.aloc.com.ng if you prefer.
 
-> Without a token the app still runs using 10 high-quality sample questions so you can test the UI and CBT flow.
+Without a valid token the app still runs using the expanded offline practice bank.
 
 ## 3. Install & Run
 
@@ -42,20 +39,39 @@ flutter build apk --release
 
 APK location: `build/app/outputs/flutter-apk/app-release.apk`
 
-## 5. GitHub Actions (Automatic APK)
+## 5. Fix the App Icon (remove the Dart logo)
+
+After running `flutter create .`:
+
+1. Convert `assets/logo.svg` to PNG sizes (48, 72, 96, 144, 192).
+2. Replace the files in:
+   - `android/app/src/main/res/mipmap-mdpi/ic_launcher.png`
+   - `android/app/src/main/res/mipmap-hdpi/ic_launcher.png`
+   - `android/app/src/main/res/mipmap-xhdpi/ic_launcher.png`
+   - `android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png`
+   - `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png`
+
+Or add the `flutter_launcher_icons` package for automatic generation.
+
+## 6. Display Name vs Package Name
+
+- Package name (`pubspec.yaml` → `name: jamb_waec_neco_prep`) uses underscores because Dart requires snake_case.
+- The name users see on the home screen can be changed in `android/app/src/main/AndroidManifest.xml` (`android:label`) to something like "JAMB WAEC NECO Prep".
+
+## 7. GitHub Actions (Automatic APK)
 
 The workflow `.github/workflows/build-apk.yml` builds a release APK on every push to `main`.
 
 1. Enable Actions in the repository settings if needed.
 2. After a push, go to the **Actions** tab → select the latest workflow run → download the **app-release** artifact.
 
-> Note: The first run after adding the workflow may need the platform folders. Run `flutter create .` once and commit the generated `android/` folder so the CI has everything it needs.
+> Note: Commit the generated `android/` folder so the CI has everything it needs.
 
 ## Recommended Next Steps
 
 - Commit the generated `android/` folder after `flutter create .`
-- Add your ALOC token (or use environment variables / secrets for CI)
+- Replace the default launcher icons
 - Customize colors / branding in `lib/utils/constants.dart`
-- Add more subjects or offline JSON question packs later
+- Optionally add more offline JSON question packs later
 
 Happy studying!

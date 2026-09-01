@@ -3,36 +3,53 @@
 **Android CBT Practice App for Nigerian Students**  
 **by JagX & JRILICENSE**
 
-Prepare for **JAMB (UTME)**, **WAEC (WASSCE)**, **NECO** and **Post-UTME** with thousands of past questions, realistic timed CBT interface, and progress tracking.
+Prepare for **JAMB (UTME)**, **WAEC (WASSCE)**, **NECO** and **Post-UTME** with thousands of past questions, realistic timed CBT interface, progress tracking, and full JAMB-style mock exams.
 
 ## Features
 
 - **Multi-Exam Support**: JAMB/UTME, WAEC/WASSCE, NECO, Post-UTME
-- **Subject Coverage**: English, Mathematics, Physics, Chemistry, Biology, Economics, Government, Literature, and more (17+ subjects)
-- **Year Filtering**: Practice by specific years (where available via API)
+- **Subject Coverage**: English, Mathematics, Physics, Chemistry, Biology, Economics, Government, Literature, Geography, Commerce, Accounting, CRK, IRK, Civic Education, History, Current Affairs, Insurance (17+ subjects)
+- **JAMB Mock Mode (Real Style)**:
+  - English Language is **compulsory** (always selected)
+  - You pick exactly **3 more subjects**
+  - Timed 2-hour exam
+  - Score scaled out of **400** like the real UTME
+- **Year Filtering**: Practice by specific years (via ALOC API)
 - **CBT Mode**: Exam-like interface with timer, question navigator, flagging
-- **100+ Offline Practice Questions**: Built-in high-quality sample bank so the app works even without internet or API token
-- **Thousands more via ALOC API**: Real past questions when you add a free token
-- **Progress Tracking**: Local history of scores
+- **Offline Practice Bank**: Expanded high-quality original questions so the app always works without internet
+- **Thousands of real past questions via ALOC API** (token already configured)
+- **My Scores / History**: View all past results with percentage, time taken, and date
+- **Review with Workings**: After every test you can expand each question to see the correct answer and full explanation/solution
 - **Modern UI** with custom **JX** logo branding
 
-## Logo & Branding
+## Why the app icon shows the Dart logo
 
-- App logo: `assets/logo.svg` (JX monogram on Nigerian green)
-- Credits appear on the home screen: **by JagX & JRILICENSE**
+Flutter projects show the default blue Dart bird icon until you generate the Android/iOS platform folders and set a custom launcher icon.
+
+**Fix it:**
+1. Run once:
+   ```bash
+   flutter create . --project-name jamb_waec_neco_prep --org com.examprep
+   ```
+2. Add `flutter_launcher_icons` (optional) or replace the icons inside `android/app/src/main/res/mipmap-*/` with your own PNG icons (use the `assets/logo.svg` as base).
+3. Rebuild the APK.
+
+## Why the package name has underscores (`jamb_waec_neco_prep`)
+
+Dart/Flutter package names **must** be valid Dart identifiers. They use `snake_case` (lowercase + underscores). Hyphens or spaces are not allowed in the `name:` field of `pubspec.yaml`.  
+The **display name** that users see on the phone is set separately (in AndroidManifest / iOS Info.plist) and can be "JAMB WAEC NECO Prep" without underscores.
 
 ## Powered by ALOC Past Questions API
 
 This app uses the free [ALOC Questions API](https://questions.aloc.com.ng/) which provides access to 6,000+ past questions spanning multiple years (including Post-UTME).
 
-> **Note**: You need a free Access Token from https://questions.aloc.com.ng (sign up → dashboard). Place it in `lib/config/api_config.dart`.
+The Access Token is already placed in `lib/config/api_config.dart`. You can replace it with your own free token if needed.
 
 ## Getting Started
 
 ### Prerequisites
 - Flutter SDK (3.16+)
 - Android Studio / VS Code with Flutter extensions
-- Free ALOC Access Token (optional but recommended)
 
 ### Setup
 
@@ -42,18 +59,12 @@ git clone https://github.com/Tajudeen001-security/JAMB-WAEC-NECO-Prep.git
 cd JAMB-WAEC-NECO-Prep
 ```
 
-2. Generate platform folders:
+2. Generate platform folders (required for building APK and fixing the icon):
 ```bash
 flutter create . --project-name jamb_waec_neco_prep --org com.examprep
 ```
 
-3. (Optional) Get free API token from [questions.aloc.com.ng](https://questions.aloc.com.ng) and update:
-```dart
-// lib/config/api_config.dart
-const String alocAccessToken = 'YOUR_ALOC_TOKEN_HERE';
-```
-
-4. Install & run:
+3. Install & run:
 ```bash
 flutter pub get
 flutter run
@@ -68,23 +79,28 @@ flutter build apk --release
 
 `.github/workflows/build-apk.yml` automatically builds a release APK on every push to `main`. Download the artifact from the Actions tab.
 
+> Tip: Commit the generated `android/` folder so CI can build successfully.
+
 ## Project Structure
 
 ```
 lib/
 ├── main.dart
-├── config/api_config.dart
-├── data/sample_questions.dart   ← 100+ offline questions
+├── config/api_config.dart          ← ALOC token here
+├── data/sample_questions.dart      ← Expanded offline bank
 ├── models/question.dart
 ├── services/
 │   ├── aloc_api_service.dart
 │   └── progress_service.dart
 ├── screens/
-│   ├── home_screen.dart         ← Logo + "by JagX & JRILICENSE"
+│   ├── home_screen.dart
 │   ├── subject_screen.dart
 │   ├── setup_screen.dart
 │   ├── quiz_screen.dart
-│   └── result_screen.dart
+│   ├── result_screen.dart          ← Shows score + full workings/explanations
+│   ├── jamb_mock_setup_screen.dart ← Pick 4 subjects (English fixed)
+│   ├── jamb_mock_quiz_screen.dart  ← Full multi-subject timed mock
+│   └── scores_screen.dart          ← View all past scores
 └── utils/constants.dart
 assets/
 └── logo.svg
