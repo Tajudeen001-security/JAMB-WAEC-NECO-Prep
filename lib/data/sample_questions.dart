@@ -1,10 +1,11 @@
+import '../services/generated_question_bank.dart';
 import '../models/question.dart';
 
 /// Large offline practice bank so the app always has content.
 /// These are original educational practice questions (not copies of copyrighted papers).
 /// Real past questions come from the ALOC API when a token is provided.
 List<Question> getAllSampleQuestions() {
-  return [
+  final base = [
     // ===== ENGLISH =====
     _q(1, 'english', 'utme', '2021',
         'Choose the option that best completes the sentence: He is one of the students who _____ always late.',
@@ -428,7 +429,8 @@ List<Question> getAllSampleQuestions() {
         'Which of the following is a communicable disease?',
         {'a': 'Diabetes', 'b': 'Hypertension', 'c': 'Tuberculosis', 'd': 'Cancer'}, 'c',
         'Tuberculosis is an infectious (communicable) disease caused by bacteria.'),
-  ];
+];
+  return [...base, ...getGeneratedOfflineQuestions()];
 }
 
 Question _q(
