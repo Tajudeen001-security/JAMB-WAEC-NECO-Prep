@@ -1,52 +1,105 @@
 import 'package:flutter/material.dart';
-import '../models/premium.dart';
 import '../services/premium_service.dart';
 
 class ActivationScreen extends StatefulWidget {
   const ActivationScreen({super.key});
-  @override State<ActivationScreen> createState() => _ActivationScreenState();
+
+  @override
+  State<ActivationScreen> createState() => _ActivationScreenState();
 }
 
 class _ActivationScreenState extends State<ActivationScreen> {
   final code = TextEditingController();
-  PremiumPlan plan = PremiumPlan.jamb;
-  PremiumDuration duration = PremiumDuration.month;
   bool busy = false;
+  String? message;
+  bool success = false;
 
   Future<void> activate() async {
-    setState(() => busy = true);
-    final ok = await PremiumService().activate(code.text, plan, duration);
+    setState(() {
+      busy = true;
+      message = null;
+    });
+    final ok = await PremiumService().activate(code.text);
     if (!mounted) return;
-    setState(() => busy = false);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(ok ? 'Premium activated on this installation.' : 'Invalid or already-used activation code.'),
-    ));
-    if (ok) Navigator.pop(context);
+    setState(() {
+      busy = false;
+      success = ok;
+      message = ok
+          ? 'Premium activated on this device. Access expires automatically at the end of your plan.'
+          : 'Invalid, already used, or wrong code. Codes are device-bound after first use.';
+    });
+    if (ok) {
+      await Future.delayed(const Duration(milliseconds: 800));
+      if (mounted) Navigator.pop(context, true);
+    }
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Activate Premium')),
-    body: ListView(padding: const EdgeInsets.all(20), children: [
-      const Text('Enter activation code', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-      const SizedBox(height: 8),
-      const Text('Your activation is tied to this installation and expires automatically.'),
-      const SizedBox(height: 18),
-      TextField(controller: code, textCapitalization: TextCapitalization.characters,
-        decoration: const InputDecoration(labelText: '16-character code', border: OutlineInputBorder())),
-      const SizedBox(height: 14),
-      DropdownButtonFormField<PremiumPlan>(
-        value: plan, decoration: const InputDecoration(labelText: 'Access', border: OutlineInputBorder()),
-        items: PremiumPlan.values.map((p) => DropdownMenuItem(value: p, child: Text(p == PremiumPlan.jamb ? 'JAMB' : p == PremiumPlan.jambWaec ? 'JAMB + WAEC' : 'ALL ACCESS'))).toList(),
-        onChanged: (v) => setState(() => plan = v!)),
-      const SizedBox(height: 14),
-      DropdownButtonFormField<PremiumDuration>(
-        value: duration, decoration: const InputDecoration(labelText: 'Duration', border: OutlineInputBorder()),
-        items: PremiumDuration.values.map((d) => DropdownMenuItem(value: d, child: Text(d == PremiumDuration.week ? '1 Week' : d == PremiumDuration.month ? '1 Month' : '1 Year'))).toList(),
-        onChanged: (v) => setState(() => duration = v!)),
-      const SizedBox(height: 20),
-      ElevatedButton(onPressed: busy ? null : activate,
-        child: busy ? const CircularProgressIndicator() : const Text('Activate')),
-    ]),
-  );
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Activate Premium')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'Enter activation code',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'After you pay and send your screenshot to jrilicense@gmail.com, '
+            'we will send you a code. Paste it here. It works only on this device.',
+            style: TextStyle(height: 1.4),
+          ),
+          const SizedBox(height: 18),
+          TextField(
+            controller: code,
+            textCapitalization: TextCapitalization.characters,
+            decoration: const InputDecoration(
+              labelText: 'Code (XXXX-XXXX-XXXX-XXXX-XXXX)',
+              border: OutlineInputBorder(),
+              helperText: '20 characters (dashes optional)',
+            ),
+          ),
+          if (message != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              message!,
+              style: TextStyle(
+                color: success ? Colors.green.shade800 : Colors.red.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 50,
+            child: ElevatedButton(
+              onPressed: busy ? null : activate,
+              child: busy
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Activate on this device'),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(14),
+              child: Text(
+                'Tips\n'
+                '• One code = one device\n'
+                '• Plan (JAMB / JAMB+WAEC / ALL) and duration are built into the code\n'
+                '• Do not share your code after activation',
+                style: TextStyle(height: 1.45),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
