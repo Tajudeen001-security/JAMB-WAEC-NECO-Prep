@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'utils/constants.dart';
 import 'screens/home_screen.dart';
+import 'screens/auth_screen.dart';
+import 'services/auth_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -21,7 +23,15 @@ class JambWaecNecoApp extends StatelessWidget {
       title: 'JAMB WAEC NECO Prep',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const HomeScreen(),
+      home: FutureBuilder<bool>(
+        future: AuthService().isLoggedIn(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+          return snapshot.data! ? const HomeScreen() : const AuthScreen();
+        },
+      ),
     );
   }
 }
