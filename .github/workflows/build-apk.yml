@@ -32,6 +32,8 @@ jobs:
           if [ ! -d android ]; then
             flutter create . --project-name jri_prep --org com.jrilearning --platforms=android
           fi
+          # The generated Flutter smoke test targets the generated MyApp, not this app.
+          rm -rf test
 
       - name: Apply JRI PREP branding
         run: |
